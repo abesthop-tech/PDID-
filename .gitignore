@@ -10,9 +10,11 @@ env/
 .env
 *.local
 
-# Local runtime state / cache (keep seed data, ignore runtime db)
+# Local runtime state / cache (keep seed data, ignore runtime db & backups)
 backend/data/runtime_state.db
+backend/data/vault_backups/
 backend/data/*.log
+.pytest_cache/
 
 # Flutter
 flutter_app/.dart_tool/
