@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# Environment variables & secrets
+.env
+*.local
+
+# Local runtime state / cache (keep seed data, ignore runtime db)
+backend/data/runtime_state.db
+backend/data/*.log
+
+# Flutter
+flutter_app/.dart_tool/
+flutter_app/build/
+flutter_app/.flutter-plugins
+flutter_app/.flutter-plugins-dependencies
+flutter_app/windows/flutter/ephemeral/
+flutter_app/linux/flutter/ephemeral/
+flutter_app/macos/Flutter/ephemeral/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
