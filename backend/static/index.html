@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Concierge — パーソナル情報ハブ＆デイリーコンシェルジュ</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="top-header">
+    <div class="brand-area">
+      <div class="brand-logo">DC</div>
+      <div class="brand-title">
+        <h1>Daily Concierge</h1>
+        <p>余計なことを考える手間を減らし、今の私を明瞭にする</p>
+      </div>
+    </div>
+
+    <nav class="nav-tabs">
+      <button class="nav-btn active" data-tab="tab-today">
+        ☀️ ① Today & 提案
+      </button>
+      <button class="nav-btn" data-tab="tab-sns">
+        📡 ② SNS差分フィード <span id="nav-unread-badge" class="unread-pill">0</span>
+      </button>
+      <button class="nav-btn" data-tab="tab-curation">
+        💡 ③ AIニュース・お得・読み物
+      </button>
+      <button class="nav-btn" data-tab="tab-sources">
+        ⚙️ ④ ソース追加・設定
+      </button>
+    </nav>
+
+    <div class="status-bar">
+      <span class="status-dot"></span>
+      <span id="vault-status-label">Obsidian Vault 同期中...</span>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-container">
+
+    <!-- ==========================================================
+         TAB 1: ① Today & 提案
+         ========================================================== -->
+    <section id="tab-today" class="tab-pane active">
+      <!-- Weather & Milestone Banner -->
+      <div class="weather-banner">
+        <div class="weather-main">
+          <div id="weather-icon" class="weather-icon">🌤️</div>
+          <div>
+            <div style="display:flex;align-items:baseline;gap:10px;">
+              <span id="weather-temp" class="weather-temp">--.-℃</span>
+              <span id="weather-condition" style="font-weight:700;font-size:15px;">読み込み中...</span>
+              <span id="weather-location" class="weather-meta">三軒茶屋・世田谷</span>
+            </div>
+            <div id="weather-advice" class="weather-meta" style="margin-top:4px;"></div>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:12px;color:#93c5fd;font-weight:700;">🎂 10/27 20歳誕生日 / 10/29〜11/8 11連休</div>
+          <div style="font-size:11.5px;color:#ccd9e8;">目標: 『10月26日までに完成させる』 / 来月 Meta Quest 3 購入</div>
+        </div>
+      </div>
+
+      <!-- AI Daily Suggestions (Must / Want / 30m Trial) -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">✨ 今日おすすめの行動（AIコンシェルジュ提案）</div>
+            <div class="card-sub">天気・空き時間・予算（Quest 3貯金）・『やるメモ.md』・『趣味ガチャ』を掛け合わせた今日の3選</div>
+          </div>
+          <button id="btn-refresh-suggestions" class="dark-btn btn-level-2">再生成</button>
+        </div>
+        <div id="proposal-container" class="proposal-grid">
+          <!-- Populated by app.js -->
+        </div>
+      </div>
+
+      <!-- 2-Column Grid for Yaru-Memo, Shumi Gacha, Schedule, Profile -->
+      <div class="dashboard-grid">
+        <!-- Left 7 cols: やるメモ.md 双方向チェックリスト＆クイック追記 -->
+        <div class="col-7">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">📓 Obsidian『やるメモ.md』双方向ハブ</div>
+                <div class="card-sub">チェックON/OFFや短文メモ追記が即座に実ファイルの該当行へ安全に反映されます</div>
+              </div>
+              <button id="btn-reload-memo" class="dark-btn btn-level-1">再読込</button>
+            </div>
+
+            <!-- Quick Memo Form -->
+            <form id="form-quick-memo" class="memo-quick-form">
+              <input
+                type="text"
+                id="input-quick-memo"
+                class="input-text"
+                placeholder="短文で雑にメモ（例：帰ったらコンシェルジュ調整 / 明日父にドライブ聞く）"
+                required
+              />
+              <select id="select-memo-section" class="select-box">
+                <option value="auto">🤖 AI自動振り分け</option>
+                <option value="today">📌 今・今日</option>
+                <option value="after_return">🏠 帰ったら</option>
+                <option value="tomorrow">🗓️ 明日・休日</option>
+                <option value="maybe_want">💭 やりたいかも</option>
+                <option value="morning_routine">🌅 朝ルーチン</option>
+              </select>
+              <button type="submit" class="dark-btn btn-level-4">＋ 追記</button>
+            </form>
+
+            <!-- Parsed Sections -->
+            <div id="yaru-memo-sections">
+              <!-- Populated by app.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right 5 cols: 進化版『趣味ガチャ』＋ 予定タイムライン ＋ 今の私サマリー -->
+        <div class="col-5">
+          <!-- Shumi Gacha Widget -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">🎲 進化版『趣味ガチャ』（Obsidian完全連動）</div>
+                <div class="card-sub">「1話 / 1章 / 30分だけ試す」ルールで積みリストを楽しく消化</div>
+              </div>
+            </div>
+
+            <div class="gacha-box">
+              <div class="gacha-cat-row">
+                <button class="dark-btn btn-level-4 gacha-cat-btn" data-cat="ALL">ALL (<span id="cnt-all">0</span>)</button>
+                <button class="dark-btn btn-level-2 gacha-cat-btn" data-cat="GAME">GAME (<span id="cnt-game">0</span>)</button>
+                <button class="dark-btn btn-level-2 gacha-cat-btn" data-cat="STORY">STORY (<span id="cnt-story">0</span>)</button>
+                <button class="dark-btn btn-level-2 gacha-cat-btn" data-cat="SINGLE">単発 (<span id="cnt-single">0</span>)</button>
+              </div>
+
+              <div style="margin-bottom:10px;">
+                <button id="btn-draw-gacha" class="dark-btn btn-level-4" style="width:100%;padding:10px;font-size:14px;">
+                  🎰 ガチャを引く！
+                </button>
+              </div>
+
+              <!-- Gacha Result Area -->
+              <div id="gacha-result-area" style="display:none;">
+                <div id="gacha-source-badge" class="card-sub"></div>
+                <div id="gacha-item-title" class="gacha-result-title"></div>
+
+                <!-- Mode: result -->
+                <div id="gacha-buttons-initial" class="gacha-action-row">
+                  <button id="btn-gacha-try" class="dark-btn btn-level-3">⏱️ 試す (30分)</button>
+                  <button id="btn-gacha-skip" class="dark-btn btn-level-2">いまはやらない</button>
+                  <button id="btn-gacha-drop" class="dark-btn btn-level-1">もう興味ない</button>
+                </div>
+
+                <!-- Mode: trial (30m timer) -->
+                <div id="gacha-trial-box" style="display:none;margin-top:10px;">
+                  <div class="card-sub">1話 / 1章 / 30分だけ試しましょう！</div>
+                  <div id="gacha-timer" class="timer-display">30:00</div>
+                  <div class="gacha-action-row">
+                    <button id="btn-gacha-good" class="dark-btn btn-good">👍 よかった（やってるものへ移動）</button>
+                    <button id="btn-gacha-meh" class="dark-btn btn-neutral">あんまりだった</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Currently Doing & Logs -->
+              <div style="text-align:left;margin-top:12px;border-top:1px solid var(--border-subtle);padding-top:10px;">
+                <div style="font-size:12px;font-weight:700;color:#93c5fd;">🔥 いまやってる・見てるもの:</div>
+                <div id="gacha-doing-list" style="font-size:12.5px;color:#cbd5e1;margin-top:4px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Schedule & Vacation Milestones -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">🗓️ 予定＆休暇マイルストーン (10/22〜11/8)</div>
+                <div class="card-sub">確定予定と『やるメモ.md』の休暇計画タイムライン</div>
+              </div>
+            </div>
+            <div id="schedule-timeline" class="timeline-list">
+              <!-- Populated by app.js -->
+            </div>
+          </div>
+
+          <!-- 「今の私」ステータスボード -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">🧭 「今の私」プロファイル＆予算コンテキスト</div>
+                <div class="card-sub">Obsidian Vault全体から自動抽出した現在の輪郭</div>
+              </div>
+            </div>
+            <div id="profile-summary-box" style="font-size:13px;">
+              <!-- Populated by app.js -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         TAB 2: ② SNS差分フィード (Inbox Zero)
+         ========================================================== -->
+    <section id="tab-sns" class="tab-pane">
+      <div class="card">
+        <div class="feed-toolbar">
+          <div>
+            <div class="card-title">📡 SNS・作品・技術 未読差分フィード (Inbox Zero)</div>
+            <div class="card-sub">おすすめ欄のノイズを遮断し、前回確認時からの未読差分だけを1画面でチェック</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <label style="font-size:12.5px;display:flex;align-items:center;gap:5px;cursor:pointer;">
+              <input type="checkbox" id="toggle-unread-only" /> 未読のみ表示
+            </label>
+            <button id="btn-crawl-now" class="dark-btn btn-level-3">🔄 今すぐ巡回</button>
+            <button id="btn-mark-all-sns-read" class="dark-btn btn-good">✓ 表示中を一括既読</button>
+          </div>
+        </div>
+
+        <div class="filter-group" style="margin-bottom:14px;">
+          <button class="dark-btn btn-level-4 sns-filter-btn" data-source="all">すべて</button>
+          <button class="dark-btn btn-level-2 sns-filter-btn" data-source="youtube">▶️ YouTube</button>
+          <button class="dark-btn btn-level-2 sns-filter-btn" data-source="pixiv">🎨 Pixiv</button>
+          <button class="dark-btn btn-level-2 sns-filter-btn" data-source="x_twitter">𝕏 Twitter差分</button>
+          <button class="dark-btn btn-level-2 sns-filter-btn" data-source="rss">📰 Zenn / RSS</button>
+          <button class="dark-btn btn-level-2 sns-filter-btn" data-source="custom_url">🌐 カスタムWeb</button>
+        </div>
+
+        <div id="sns-feed-list" class="feed-list">
+          <!-- Populated by app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         TAB 3: ③ AIニュース・お得情報・読み物
+         ========================================================== -->
+    <section id="tab-curation" class="tab-pane">
+      <div class="dashboard-grid">
+        <div class="col-4">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">🤖 AI技術ニュース＆解説</div>
+                <div class="card-sub">なぜ重要か・自分の環境への活かし方付き</div>
+              </div>
+            </div>
+            <div id="curation-ai-list" class="feed-list"></div>
+          </div>
+        </div>
+
+        <div class="col-4">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">💰 お得情報 (Quest 3 / Steam / 三茶・都内)</div>
+                <div class="card-sub">予算制約と11連休の遊びに直結するお得ナビ</div>
+              </div>
+            </div>
+            <div id="curation-deals-list" class="feed-list"></div>
+          </div>
+        </div>
+
+        <div class="col-4">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">📖 良記事・哲学・創作キュレーション</div>
+                <div class="card-sub">『10月26日までに完成させる』や日常分析に響く読み物</div>
+              </div>
+            </div>
+            <div id="curation-reading-list" class="feed-list"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         TAB 4: ④ ソース追加・設定
+         ========================================================== -->
+    <section id="tab-sources" class="tab-pane">
+      <div class="dashboard-grid">
+        <div class="col-6">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">➕ URL＋自然言語指示で監視ソースを追加</div>
+                <div class="card-sub">URLを貼って「〜の情報を取って」と指示すると、HTML/RSSを解析して抽出ルールを自動生成します</div>
+              </div>
+            </div>
+
+            <form id="form-add-source" style="display:flex;flex-direction:column;gap:12px;">
+              <div>
+                <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px;">監視したいURL (YouTube / Pixiv / X / RSS / 任意サイト)</label>
+                <input
+                  type="url"
+                  id="input-source-url"
+                  class="input-text"
+                  style="width:100%;"
+                  placeholder="https://zenn.dev/topics/comfyui/feed または 公式サイトURL"
+                  required
+                />
+              </div>
+
+              <div>
+                <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px;">自然言語での取得指示（「どんな差分を取りたいか」）</label>
+                <input
+                  type="text"
+                  id="input-source-instruction"
+                  class="input-text"
+                  style="width:100%;"
+                  placeholder="例：最新イベント更新情報とセール情報だけ取って / このタグの新着イラストを追って"
+                  required
+                />
+              </div>
+
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <input
+                  type="text"
+                  id="input-source-name"
+                  class="input-text"
+                  placeholder="表示名（省略時は自動判定）"
+                />
+                <select id="select-source-category" class="select-box">
+                  <option value="sns_diff">📡 SNS・新着差分フィード</option>
+                  <option value="ai_news">🤖 AI技術ニュース</option>
+                  <option value="deals">💰 お得・セール・スポット情報</option>
+                  <option value="reading">📖 良記事・読み物</option>
+                </select>
+              </div>
+
+              <div style="display:flex;gap:10px;">
+                <button type="button" id="btn-preview-source" class="dark-btn btn-level-2">🔍 ルール解析＆プレビュー</button>
+                <button type="submit" class="dark-btn btn-level-4">＋ 監視ソースに登録して初回取得</button>
+              </div>
+            </form>
+
+            <!-- Analysis Preview Box -->
+            <div id="source-analysis-result" style="display:none;margin-top:16px;padding:12px;background:#0d1524;border:1px solid var(--border-subtle);border-radius:8px;">
+              <div style="font-size:13px;font-weight:700;color:#60a5fa;margin-bottom:6px;">解析結果＆抽出プレビュー</div>
+              <pre id="source-rule-json" style="font-size:11.5px;color:#a7f3d0;overflow-x:auto;margin-bottom:8px;"></pre>
+              <div id="source-preview-items" style="font-size:12.5px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">📋 登録済みウォッチソース一覧</div>
+                <div class="card-sub">現在バックグラウンドで差分監視しているターゲット</div>
+              </div>
+            </div>
+            <div id="watch-sources-list" class="feed-list"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">🔗 環境・Obsidian Sync ステータス</div>
+            </div>
+            <div id="system-status-detail" style="font-size:13px;color:#cbd5e1;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="active" data-tab="tab-today">
+      <span>☀️</span>
+      <span>Today</span>
+    </button>
+    <button data-tab="tab-sns">
+      <span>📡</span>
+      <span>SNS差分</span>
+    </button>
+    <button data-tab="tab-curation">
+      <span>💡</span>
+      <span>AI・お得</span>
+    </button>
+    <button data-tab="tab-sources">
+      <span>⚙️</span>
+      <span>設定・追加</span>
+    </button>
+  </nav>
+
+  <!-- Toast -->
+  <div id="toast">保存しました</div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
