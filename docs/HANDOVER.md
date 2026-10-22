@@ -9,7 +9,7 @@
 ### Step 1: GitHubからクローンする
 自宅PCのターミナル（PowerShell等）で任意の作業フォルダに移動し、以下を実行します：
 ```powershell
-git clone <あなたのGitHubリポジトリURL> daily_concierge
+git clone https://github.com/abesthop-tech/PDID-.git daily_concierge
 cd daily_concierge
 ```
 
